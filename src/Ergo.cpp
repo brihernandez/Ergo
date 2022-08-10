@@ -25,32 +25,42 @@ void ApplyInputToShip(Ship& ship)
 	if (IsKeyDown(KEY_W)) ship.InputForward += 1;
 	if (IsKeyDown(KEY_S)) ship.InputForward -= 1;
 
-	ship.InputForward -= GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_Y);
+	ship.InputForward -= GetGamepadAxisMovement(0, GamepadAxis::GAMEPAD_AXIS_LEFT_Y);
 	ship.InputForward = Clamp(ship.InputForward, -1, 1);
 
 	ship.InputLeft = 0;
 	if (IsKeyDown(KEY_D)) ship.InputLeft -= 1;
 	if (IsKeyDown(KEY_A)) ship.InputLeft += 1;
 
-	ship.InputLeft -= GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X);
+	ship.InputLeft -= GetGamepadAxisMovement(0, GamepadAxis::GAMEPAD_AXIS_LEFT_X);
 	ship.InputLeft = Clamp(ship.InputLeft, -1, 1);
 
 	ship.InputUp = 0;
 	if (IsKeyDown(KEY_SPACE)) ship.InputUp += 1;
 	if (IsKeyDown(KEY_LEFT_CONTROL)) ship.InputUp -= 1;
 
+	auto triggerRight = GetGamepadAxisMovement(0, GamepadAxis::GAMEPAD_AXIS_RIGHT_TRIGGER);
+	triggerRight = Remap(triggerRight, -1, 1, 0, 1);
+
+	auto triggerLeft = GetGamepadAxisMovement(0, GamepadAxis::GAMEPAD_AXIS_LEFT_TRIGGER);
+	triggerLeft = Remap(triggerLeft, -1, 1, 0, 1);
+
+	ship.InputUp += triggerRight;
+	ship.InputUp -= triggerLeft;
+	ship.InputUp = Clamp(ship.InputUp, -1, 1);
+
 	ship.InputYawLeft = 0;
 	if (IsKeyDown(KEY_RIGHT)) ship.InputYawLeft -= 1;
 	if (IsKeyDown(KEY_LEFT)) ship.InputYawLeft += 1;
 
-	ship.InputYawLeft -= GetGamepadAxisMovement(0, GAMEPAD_AXIS_RIGHT_X);
+	ship.InputYawLeft -= GetGamepadAxisMovement(0, GamepadAxis::GAMEPAD_AXIS_RIGHT_X);
 	ship.InputYawLeft = Clamp(ship.InputYawLeft, -1, 1);
 
 	ship.InputPitchDown = 0;
 	if (IsKeyDown(KEY_UP)) ship.InputPitchDown += 1;
 	if (IsKeyDown(KEY_DOWN)) ship.InputPitchDown -= 1;
 
-	ship.InputPitchDown += GetGamepadAxisMovement(0, GAMEPAD_AXIS_RIGHT_Y);
+	ship.InputPitchDown += GetGamepadAxisMovement(0, GamepadAxis::GAMEPAD_AXIS_RIGHT_Y);
 	ship.InputPitchDown = Clamp(ship.InputPitchDown, -1, 1);
 
 	ship.InputRollRight = 0;
