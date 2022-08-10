@@ -28,6 +28,8 @@ public:
 	float Length = 1.0f;
 	float Width = 1.0f;
 
+	Color TrailColor = DARKGREEN;
+
 	Ship(const char* modelPath, const char* texturePath, Color color);
 	~Ship();
 

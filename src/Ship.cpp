@@ -132,7 +132,7 @@ void Ship::DrawTrail() const
 
 		auto& thisRung = Rungs[i % RungCount];
 
-		Color color = DARKGREEN;
+		Color color = TrailColor;
 		color.a = 255 * thisRung.TimeToLive / RungTimeToLive;
 		Color fill = color;
 		fill.a = color.a / 4;

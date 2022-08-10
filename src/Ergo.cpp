@@ -75,6 +75,7 @@ int main()
 
 	Ship player("data/ship.gltf", "data/a16.png", RAYWHITE);
 	Ship other("data/ship.gltf", "data/a16.png", RAYWHITE);
+	other.TrailColor = MAROON;
 	other.Position = { 10, 2, 10 };
 	SpaceDust dust = SpaceDust(25, 255);
 
