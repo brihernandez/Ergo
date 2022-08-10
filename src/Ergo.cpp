@@ -6,11 +6,15 @@
 #include "GameCamera.h"
 #include "MathUtils.h"
 
+//#define RENDER_SMALL
+
 int g_ScreenWidth = 800;
 int g_ScreenHeight = 600;
 
-//inline int g_RenderWidth = 640;
-//inline int g_RenderHeight = 480;
+#ifdef RENDER_SMALL
+int g_RenderWidth = 400;
+int g_RenderHeight = 300;
+#endif // RENDER_SMALL
 
 void DrawStandardFPS()
 {
@@ -73,6 +77,20 @@ int main()
 	SetConfigFlags(ConfigFlags::FLAG_MSAA_4X_HINT | ConfigFlags::FLAG_VSYNC_HINT);
 	InitWindow(g_ScreenWidth, g_ScreenHeight, "Ergo");
 
+#ifdef RENDER_SMALL
+	// Set up low resolution rendering independent from the window resolution.
+	auto renderRatio = (float)g_ScreenWidth / (float)g_RenderWidth;
+	RenderTexture2D renderTarget = LoadRenderTexture(g_RenderWidth, g_RenderHeight);
+	SetTextureFilter(renderTarget.texture, TextureFilter::TEXTURE_FILTER_POINT);
+
+
+	// Target height is flipped (in the source rectangle) due to OpenGL reasons.
+	Rectangle sourceRect = { 0, 0, (float)renderTarget.texture.width, -(float)renderTarget.texture.height };
+	Rectangle destRect = { -renderRatio, -renderRatio, g_ScreenWidth + (renderRatio * 2), g_ScreenHeight + (renderRatio * 2) };
+	Camera2D screenSpaceCamera = { 0 };
+	screenSpaceCamera.zoom = 1.0f;
+#endif // RENDER_SMALL
+
 	Ship player("data/ship.gltf", "data/a16.png", RAYWHITE);
 	Ship other("data/ship.gltf", "data/a16.png", RAYWHITE);
 	other.TrailColor = MAROON;
@@ -120,7 +138,11 @@ int main()
 		}
 
 		// Render
+#ifdef RENDER_SMALL
+		BeginTextureMode(renderTarget);
+#else
 		BeginDrawing();
+#endif
 		{
 			ClearBackground({32, 32, 64, 255});
 
@@ -158,7 +180,24 @@ int main()
 
 			DrawStandardFPS();
 		}
+#ifdef RENDER_SMALL
+		EndTextureMode();
+#else
 		EndDrawing();
+#endif
+
+#ifdef RENDER_SMALL
+		// Draw the render texture target to the screen.
+		BeginDrawing();
+		{
+			ClearBackground(RED);
+
+			BeginMode2D(screenSpaceCamera);
+			DrawTexturePro(renderTarget.texture, sourceRect, destRect, { 0, 0 }, 0, WHITE);
+			EndMode2D();
+		}
+		EndDrawing();
+#endif // RENDER_SMALL
 	}
 
 	CloseWindow();
