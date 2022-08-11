@@ -38,7 +38,7 @@ public:
 	void DrawTrail() const;
 
 private:
-	Model Model = {};
+	Model ShipModel = {};
 	Color ShipColor = {};
 
 	static const int RungCount = 16;
@@ -69,5 +69,5 @@ public:
 	void DrawCrosshair() const;
 
 private:
-	Model Model = {};
+	Model CrosshairModel = {};
 };

@@ -14,8 +14,8 @@ Ship::Ship(const char* modelPath, const char* texturePath, Color color)
 	texture.mipmaps = 0;
 	SetTextureFilter(texture, TEXTURE_FILTER_POINT);
 
-	Model = LoadModel(modelPath);
-	Model.materials[0].maps[MaterialMapIndex::MATERIAL_MAP_ALBEDO].texture = texture;
+	ShipModel = LoadModel(modelPath);
+	ShipModel.materials[0].maps[MaterialMapIndex::MATERIAL_MAP_ALBEDO].texture = texture;
 
 	Rotation = QuaternionFromEuler(1, 2, 0);
 
@@ -26,7 +26,7 @@ Ship::Ship(const char* modelPath, const char* texturePath, Color color)
 
 Ship::~Ship()
 {
-	UnloadModel(Model);
+	UnloadModel(ShipModel);
 }
 
 void Ship::Update(float deltaTime)
@@ -83,7 +83,7 @@ void Ship::Update(float deltaTime)
 	// doesn't have to happen at the render stage.
 	auto transform = MatrixTranslate(Position.x, Position.y, Position.z);
 	transform = MatrixMultiply(QuaternionToMatrix(visualRotation), transform);
-	Model.transform = transform;
+	ShipModel.transform = transform;
 
 	// Rungs
 	if (Vector3Distance(Position, LastRungPosition) > RungDistance)
@@ -108,7 +108,7 @@ void Ship::EmitTrailRung()
 
 void Ship::Draw(bool showDebugAxes) const
 {
-	DrawModel(Model, Vector3Zero(), 1, ShipColor);
+	DrawModel(ShipModel, Vector3Zero(), 1, ShipColor);
 
 	if (showDebugAxes)
 	{
@@ -160,12 +160,12 @@ void Ship::DrawTrail() const
 
 Crosshair::Crosshair(const char* modelPath)
 {
-	Model = LoadModel(modelPath);
+	CrosshairModel = LoadModel(modelPath);
 }
 
 Crosshair::~Crosshair()
 {
-	UnloadModel(Model);
+	UnloadModel(CrosshairModel);
 }
 
 void Crosshair::PositionCrosshairOnShip(const Ship& ship, float distance)
@@ -173,7 +173,7 @@ void Crosshair::PositionCrosshairOnShip(const Ship& ship, float distance)
 	auto crosshairPos = Vector3Add(Vector3Scale(ship.GetForward(), distance), ship.Position);
 	auto crosshairTransform = MatrixTranslate(crosshairPos.x, crosshairPos.y, crosshairPos.z);
 	crosshairTransform = MatrixMultiply(QuaternionToMatrix(ship.Rotation), crosshairTransform);
-	Model.transform = crosshairTransform;
+	CrosshairModel.transform = crosshairTransform;
 }
 
 void Crosshair::DrawCrosshair() const
@@ -181,7 +181,7 @@ void Crosshair::DrawCrosshair() const
 	BeginBlendMode(BlendMode::BLEND_ADDITIVE);
 	rlDisableDepthTest();
 
-	DrawModel(Model, Vector3Zero(), 1, DARKGREEN);
+	DrawModel(CrosshairModel, Vector3Zero(), 1, DARKGREEN);
 	//DrawModelWires(Model, Vector3Zero(), 1, DARKGREEN);
 
 	rlEnableDepthTest();
