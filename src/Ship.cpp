@@ -85,10 +85,11 @@ void Ship::Update(float deltaTime)
 	transform = MatrixMultiply(QuaternionToMatrix(visualRotation), transform);
 	ShipModel.transform = transform;
 
-	// Rungs
+	// The currently active trail rung is dragged directly behind the ship for a smoother trail.
+	PositionActiveTrailRung();
 	if (Vector3Distance(Position, LastRungPosition) > RungDistance)
 	{
-		EmitTrailRung();
+		RungIndex = (RungIndex + 1) % RungCount;
 		LastRungPosition = Position;
 	}
 
@@ -96,14 +97,13 @@ void Ship::Update(float deltaTime)
 		Rungs[i].TimeToLive -= deltaTime;
 }
 
-void Ship::EmitTrailRung()
+void Ship::PositionActiveTrailRung()
 {
 	Rungs[RungIndex].TimeToLive = RungTimeToLive;
 	float halfWidth = Width / 2.f;
 	float halfLength = Length / 2.f;
 	Rungs[RungIndex].LeftPoint = TransformPoint({ -halfWidth, 0.0f, -halfLength });
 	Rungs[RungIndex].RightPoint = TransformPoint({ halfWidth, 0.0f, -halfLength });
-	RungIndex = (RungIndex + 1) % RungCount;
 }
 
 void Ship::Draw(bool showDebugAxes) const
@@ -137,7 +137,10 @@ void Ship::DrawTrail() const
 		Color fill = color;
 		fill.a = color.a / 4;
 
-		DrawLine3D(thisRung.LeftPoint, thisRung.RightPoint, color);
+		// The current rung is dragged along behind the ship, so the crossbar shouldn't be drawn.
+		// If the crossbar is drawn when the ship is slow, it looks weird having a line behind it.
+		if (i != RungIndex)
+			DrawLine3D(thisRung.LeftPoint, thisRung.RightPoint, color);
 
 		auto& nextRung = Rungs[(i + 1) % RungCount];
 		if (nextRung.TimeToLive > 0 && thisRung.TimeToLive < nextRung.TimeToLive)

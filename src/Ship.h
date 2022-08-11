@@ -54,7 +54,7 @@ private:
 
 	float VisualBank = 0;
 
-	void EmitTrailRung();
+	void PositionActiveTrailRung();
 	Vector3 LastRungPosition = { 0, 0, 0 };
 	int RungIndex = 0;
 };
