@@ -7,9 +7,7 @@
 
 inline float GetPrettyBadRandomFloat(float min, float max)
 {
-	return (float)GetRandomValue(min, max);
-
-	auto value = static_cast<float>(GetRandomValue(min * 1000, max * 1000));
+	auto value = static_cast<float>(GetRandomValue((int)min * 1000, (int)max * 1000));
 	value /= 1000.f;
 	return value;
 }
@@ -70,7 +68,7 @@ void SpaceDust::Draw(Vector3 viewPosition, Vector3 velocity, bool drawDots) cons
 		float distance = Vector3Distance(viewPosition, Points[i]);
 
 		float farLerp = Clamp(Normalize(distance, Extent * .9f, Extent), 0, 1);
-		unsigned char farAlpha = Lerp(255, 0, farLerp);
+		unsigned char farAlpha = (unsigned char)Lerp(255, 0, farLerp);
 
 		const float cubeSize = 0.01f;
 
